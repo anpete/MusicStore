@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MusicStore.Models;
 using MusicStore.ViewModels;
+#pragma warning disable 1998
 
 namespace MusicStore.Controllers
 {
@@ -44,15 +45,17 @@ namespace MusicStore.Controllers
         public async Task<IActionResult> AddToCart(int id, CancellationToken requestAborted)
         {
             // Retrieve the album from the database
-            var addedAlbum = DbContext.Albums
-                .Single(album => album.AlbumId == id);
+//            var addedAlbum = DbContext.Albums
+//                .Single(album => album.AlbumId == id);
+
+            var addedAlbum = new Album();
 
             // Add it to the shopping cart
             var cart = ShoppingCart.GetCart(DbContext, HttpContext);
 
             cart.AddToCart(addedAlbum);
 
-            await DbContext.SaveChangesAsync(requestAborted);
+            //await DbContext.SaveChangesAsync(requestAborted);
             _logger.LogInformation("Album {albumId} was added to the cart.", addedAlbum.AlbumId);
 
             // Go back to the main store page for more shopping
@@ -71,15 +74,17 @@ namespace MusicStore.Controllers
             var cart = ShoppingCart.GetCart(DbContext, HttpContext);
 
             // Get the name of the album to display confirmation
-            var cartItem = await DbContext.CartItems
-                .Where(item => item.CartItemId == id)
-                .Include(c => c.Album)
-                .SingleOrDefaultAsync();
+//            var cartItem = await DbContext.CartItems
+//                .Where(item => item.CartItemId == id)
+//                .Include(c => c.Album)
+//                .SingleOrDefaultAsync();
+
+            var cartItem = new CartItem { Album = new Album() };
 
             // Remove from cart
             int itemCount = cart.RemoveFromCart(id);
 
-            await DbContext.SaveChangesAsync(requestAborted);
+            //await DbContext.SaveChangesAsync(requestAborted);
 
             string removed = (itemCount > 0) ? " 1 copy of " : string.Empty;
 

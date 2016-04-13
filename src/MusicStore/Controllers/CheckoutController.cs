@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MusicStore.Models;
+#pragma warning disable 1998
 
 namespace MusicStore.Controllers
 {
@@ -60,16 +61,17 @@ namespace MusicStore.Controllers
                     order.OrderDate = DateTime.Now;
 
                     //Add the Order
-                    dbContext.Orders.Add(order);
+                    //dbContext.Orders.Add(order);
 
                     //Process the order
                     var cart = ShoppingCart.GetCart(dbContext, HttpContext);
+
                     await cart.CreateOrder(order);
 
                     _logger.LogInformation("User {userName} started checkout of {orderId}.", order.Username, order.OrderId);
 
                     // Save all changes
-                    await dbContext.SaveChangesAsync(requestAborted);
+                   // await dbContext.SaveChangesAsync(requestAborted);
 
                     return RedirectToAction("Complete", new { id = order.OrderId });
                 }
@@ -91,9 +93,15 @@ namespace MusicStore.Controllers
             var userName = HttpContext.User.Identity.Name;
 
             // Validate customer owns this order
-            bool isValid = await dbContext.Orders.AnyAsync(
-                o => o.OrderId == id &&
-                o.Username == userName);
+            // bool isValid = await dbContext.Orders.AnyAsync(
+            //     o => o.OrderId == id &&
+            //     o.Username == userName);
+
+            var isValid = true;
+
+//            await dbContext.Orders.AnyAsync(
+//                o => o.OrderId == id &&
+//                o.Username == HttpContext.User.Identity.Name);
 
             if (isValid)
             {

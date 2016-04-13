@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using MusicStore.Models;
+#pragma warning disable 1998
 
 namespace MusicStore.Controllers
 {
@@ -22,7 +23,8 @@ namespace MusicStore.Controllers
             List<Album> albums;
             if (!cache.TryGetValue(cacheKey, out albums))
             {
-                albums = await GetTopSellingAlbumsAsync(dbContext, 6);
+                //albums = await GetTopSellingAlbumsAsync(dbContext, 6);
+                albums = new List<Album>();
 
                 if (albums != null && albums.Count > 0)
                 {

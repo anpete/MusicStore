@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicStore.Models;
+#pragma warning disable 1998
 
 namespace MusicStore.Components
 {
@@ -26,13 +27,15 @@ namespace MusicStore.Components
 
         private async Task<List<Genre>> GetGenres()
         {
-            return await DbContext.Genres
-                .Include(g => g.Albums).ThenInclude(a => a.OrderDetails)
-                // TODO use nested sum https://github.com/aspnet/EntityFramework/issues/3792
-                //.OrderByDescending(
-                //    g => g.Albums.Sum(a => a.OrderDetails.Sum(od => od.Quantity)))
-                .Take(9)
-                .ToListAsync();
+//            return await DbContext.Genres
+//                .Include(g => g.Albums).ThenInclude(a => a.OrderDetails)
+//                // TODO use nested sum https://github.com/aspnet/EntityFramework/issues/3792
+//                //.OrderByDescending(
+//                //    g => g.Albums.Sum(a => a.OrderDetails.Sum(od => od.Quantity)))
+//                .Take(9)
+//                .ToListAsync();
+
+                   return new List<Genre>();
         }
     }
 }
