@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using MusicStore.Models;
+using System.Data.SqlClient;
 
 namespace MusicStore.Controllers
 {
@@ -55,15 +56,17 @@ namespace MusicStore.Controllers
             return View("~/Views/Shared/AccessDenied.cshtml");
         }
 
-        private Task<List<Album>> GetTopSellingAlbumsAsync(MusicStoreContext dbContext, int count)
+        private async Task<List<Album>> GetTopSellingAlbumsAsync(MusicStoreContext dbContext, int count)
         {
             // Group the order details by album and return
             // the albums with the highest count
 
-            return dbContext.Albums
-                .OrderByDescending(a => a.OrderDetails.Count)
-                .Take(count)
-                .ToListAsync();
+            // return dbContext.Albums
+            //     .OrderByDescending(a => a.OrderDetails.Count)
+            //     .Take(count)
+            //     .ToListAsync();
+            
+            return Dal.GetTopSellingAlbumsAsync();
         }
     }
 }
