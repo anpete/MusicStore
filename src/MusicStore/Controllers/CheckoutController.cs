@@ -61,7 +61,7 @@ namespace MusicStore.Controllers
                     order.OrderDate = DateTime.Now;
 
                     //Add the Order
-                    //dbContext.Orders.Add(order);
+                    dbContext.Orders.Add(order);
 
                     //Process the order
                     var cart = ShoppingCart.GetCart(dbContext, HttpContext);
@@ -71,7 +71,7 @@ namespace MusicStore.Controllers
                     _logger.LogInformation("User {userName} started checkout of {orderId}.", order.Username, order.OrderId);
 
                     // Save all changes
-                   // await dbContext.SaveChangesAsync(requestAborted);
+                    await Task.FromResult(dbContext.SaveChanges());
 
                     return RedirectToAction("Complete", new { id = order.OrderId });
                 }
@@ -93,15 +93,13 @@ namespace MusicStore.Controllers
             var userName = HttpContext.User.Identity.Name;
 
             // Validate customer owns this order
-            // bool isValid = await dbContext.Orders.AnyAsync(
-            //     o => o.OrderId == id &&
-            //     o.Username == userName);
+            bool isValid = await Task.FromResult(dbContext.Orders.Any(
+                o => o.OrderId == id &&
+                o.Username == userName));
 
-            var isValid = true;
-
-//            await dbContext.Orders.AnyAsync(
-//                o => o.OrderId == id &&
-//                o.Username == HttpContext.User.Identity.Name);
+           await Task.FromResult(dbContext.Orders.Any(
+               o => o.OrderId == id &&
+               o.Username == HttpContext.User.Identity.Name));
 
             if (isValid)
             {

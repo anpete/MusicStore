@@ -23,9 +23,8 @@ namespace MusicStore.Controllers
         // GET: /Store/
         public async Task<IActionResult> Index()
         {
-            //var genres = await DbContext.Genres.ToListAsync();
-            var genres = new List<Genre>();
-
+            var genres = await Task.FromResult(DbContext.Genres.ToList());
+            
             return View(genres);
         }
 
@@ -34,12 +33,10 @@ namespace MusicStore.Controllers
         public async Task<IActionResult> Browse(string genre)
         {
             // Retrieve Genre genre and its Associated associated Albums albums from database
-//            var genreModel = await DbContext.Genres
-//                .Include(g => g.Albums)
-//                .Where(g => g.Name == genre)
-//                .FirstOrDefaultAsync();
-
-            var genreModel = new Genre();
+           var genreModel = await Task.FromResult(DbContext.Genres
+               .Include(g => g.Albums)
+               .Where(g => g.Name == genre)
+               .FirstOrDefault());
 
             if (genreModel == null)
             {
@@ -58,13 +55,11 @@ namespace MusicStore.Controllers
             Album album;
             if (!cache.TryGetValue(cacheKey, out album))
             {
-//                album = await DbContext.Albums
-//                                .Where(a => a.AlbumId == id)
-//                                .Include(a => a.Artist)
-//                                .Include(a => a.Genre)
-//                                .FirstOrDefaultAsync();
-
-                album = new Album() {Artist = new Artist(), Genre = new Genre()} ;
+               album = await Task.FromResult(DbContext.Albums
+                               .Where(a => a.AlbumId == id)
+                               .Include(a => a.Artist)
+                               .Include(a => a.Genre)
+                               .FirstOrDefault());
 
                 if (album != null)
                 {

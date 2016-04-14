@@ -27,15 +27,13 @@ namespace MusicStore.Components
 
         private async Task<List<Genre>> GetGenres()
         {
-//            return await DbContext.Genres
-//                .Include(g => g.Albums).ThenInclude(a => a.OrderDetails)
-//                // TODO use nested sum https://github.com/aspnet/EntityFramework/issues/3792
-//                //.OrderByDescending(
-//                //    g => g.Albums.Sum(a => a.OrderDetails.Sum(od => od.Quantity)))
-//                .Take(9)
-//                .ToListAsync();
-
-                   return new List<Genre>();
+           return await Task.FromResult(DbContext.Genres
+               .Include(g => g.Albums).ThenInclude(a => a.OrderDetails)
+               // TODO use nested sum https://github.com/aspnet/EntityFramework/issues/3792
+               //.OrderByDescending(
+               //    g => g.Albums.Sum(a => a.OrderDetails.Sum(od => od.Quantity)))
+               .Take(9)
+               .ToList());
         }
     }
 }

@@ -62,10 +62,10 @@ namespace MusicStore.Controllers
             // Group the order details by album and return
             // the albums with the highest count
 
-            return await dbContext.Albums
+            return await Task.FromResult(dbContext.Albums
                 .OrderByDescending(a => a.OrderDetails.Count)
                 .Take(count)
-                .ToListAsync();
+                .ToList());
         }
     }
 }
