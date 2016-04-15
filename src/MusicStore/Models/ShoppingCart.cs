@@ -55,21 +55,32 @@ namespace MusicStore.Models
             }
         }
 
-        public int RemoveFromCart(int id)
+        public CartItem RemoveFromCart(int id)
         {
-            // Get the cart
-            var cartItem = _dbContext.CartItems.Single(
-                cart => cart.CartId == _shoppingCartId
-                && cart.CartItemId == id);
-
-            int itemCount = 0;
+            var cartItem 
+                = _dbContext.CartItems
+                    .Where(ci => ci.CartId == _shoppingCartId
+                            && ci.CartItemId == id)
+                    .Select(ci => new CartItem 
+                        { 
+                            Count = ci.Count,
+                            Album = new Album 
+                                { 
+                                    AlbumId = ci.AlbumId, 
+                                    Title = ci.Album.Title 
+                                }
+                        })
+                    .FirstOrDefault();
 
             if (cartItem != null)
             {
-                if (cartItem.Count > 1)
+                cartItem.CartItemId = id;
+             
+                if (--cartItem.Count > 0)
                 {
-                    cartItem.Count--;
-                    itemCount = cartItem.Count;
+                    var entry = _dbContext.CartItems.Attach(cartItem);
+                    
+                    entry.Property(e => e.Count).IsModified = true;
                 }
                 else
                 {
@@ -77,7 +88,7 @@ namespace MusicStore.Models
                 }
             }
 
-            return itemCount;
+            return cartItem;
         }
 
         public async Task EmptyCart()
@@ -92,11 +103,13 @@ namespace MusicStore.Models
 
         public Task<List<CartItem>> GetCartItems()
         {
-            return _dbContext
-                .CartItems
-                .Where(cart => cart.CartId == _shoppingCartId)
-                .Include(c => c.Album)
-                .ToListAsync();
+            // return _dbContext
+            //     .CartItems
+            //     .Where(cart => cart.CartId == _shoppingCartId)
+            //     .Include(c => c.Album)
+            //     .ToListAsync();
+            
+            return Dal.GetCartItems(_dbContext.Database.GetDbConnection(), _shoppingCartId);
         }
         
         public Task<List<string>> GetCartAlbumTitles()
@@ -147,7 +160,6 @@ namespace MusicStore.Models
             // Iterate over the items in the cart, adding the order details for each
             foreach (var item in cartItems)
             {
-                //var album = _db.Albums.Find(item.AlbumId);
                 var album = await _dbContext.Albums.SingleAsync(a => a.AlbumId == item.AlbumId);
 
                 var orderDetail = new OrderDetail

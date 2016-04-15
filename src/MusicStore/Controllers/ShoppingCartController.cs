@@ -67,18 +67,12 @@ namespace MusicStore.Controllers
             // Retrieve the current user's shopping cart
             var cart = ShoppingCart.GetCart(DbContext, HttpContext);
 
-            // Get the name of the album to display confirmation
-            var cartItem = await DbContext.CartItems
-                .Where(item => item.CartItemId == id)
-                .Include(c => c.Album)
-                .SingleOrDefaultAsync();
-
             // Remove from cart
-            int itemCount = cart.RemoveFromCart(id);
+            var cartItem = cart.RemoveFromCart(id);
 
             await DbContext.SaveChangesAsync(requestAborted);
 
-            string removed = (itemCount > 0) ? " 1 copy of " : string.Empty;
+            string removed = cartItem != null ? " 1 copy of " : string.Empty;
 
             // Display the confirmation message
 
@@ -88,7 +82,7 @@ namespace MusicStore.Controllers
                     " has been removed from your shopping cart.",
                 CartTotal = await cart.GetTotal(),
                 CartCount = await cart.GetCount(),
-                ItemCount = itemCount,
+                ItemCount = cartItem.Count,
                 DeleteId = id
             };
 
