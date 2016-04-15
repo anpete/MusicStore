@@ -53,18 +53,7 @@ namespace MusicStore.Controllers
             AlbumDetails album;
             if (!cache.TryGetValue(cacheKey, out album))
             {
-                album = await DbContext.Albums
-                                .Where(a => a.AlbumId == id)
-                                .Select(a => new AlbumDetails
-                                    {
-                                        AlbumId = a.AlbumId,
-                                        Title = a.Title,
-                                        AlbumArtUrl = a.AlbumArtUrl,
-                                        Price = a.Price,
-                                        GenreName = a.Genre.Name,
-                                        ArtistName = a.Artist.Name
-                                    })
-                                .FirstOrDefaultAsync();
+                album = await Dal.GetAlbumDetails(DbContext.Database.GetDbConnection(), id);
 
                 if (album != null)
                 {

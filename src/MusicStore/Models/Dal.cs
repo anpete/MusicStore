@@ -3,11 +3,36 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Threading.Tasks;
+using MusicStore.ViewModels;
 
 namespace MusicStore.Models
 {
     public static class Dal
     {
+        public static async Task<AlbumDetails> GetAlbumDetails(DbConnection connection, int albumId)
+        {
+            var results = await Query(
+                connection,
+                @"SELECT TOP(1) [a].[AlbumId], [a].[Title], [a].[AlbumArtUrl], [a].[Price], [a.Genre].[Name], [a.Artist].[Name]
+                  FROM [Albums] AS [a]
+                  INNER JOIN [Artists] AS [a.Artist] ON [a].[ArtistId] = [a.Artist].[ArtistId]
+                  INNER JOIN [Genres] AS [a.Genre] ON [a].[GenreId] = [a.Genre].[GenreId]
+                  WHERE [a].[AlbumId] = @__id_0",
+                6,
+                values => new AlbumDetails
+                {
+                    AlbumId = (int) values[0],
+                    Title = (string) values[1],
+                    AlbumArtUrl = (string) values[2],
+                    Price = (decimal) values[3],
+                    GenreName = (string) values[4],
+                    ArtistName = (string) values[5]
+                },
+                new Dictionary<string, object> {{"__id_0", albumId}});
+
+            return results.Count == 1 ? results[0] : null;
+        }
+
         public static Task<List<string>> GetCartAlbumTitles(DbConnection connection, string shoppingCartId)
         {
             return Query(
