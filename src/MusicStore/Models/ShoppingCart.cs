@@ -114,11 +114,13 @@ namespace MusicStore.Models
         public Task<int> GetCount()
         {
             // Get the count of each item in the cart and sum them up
-            return _dbContext
-                .CartItems
-                .Where(c => c.CartId == _shoppingCartId)
-                .Select(c => c.Count)
-                .SumAsync();
+            // return _dbContext
+            //     .CartItems
+            //     .Where(c => c.CartId == _shoppingCartId)
+            //     .Select(c => c.Count)
+            //     .SumAsync();
+            
+            return Dal.GetShoppingCartCount(_dbContext.Database.GetDbConnection(), _shoppingCartId);
         }
 
         public Task<decimal> GetTotal()
@@ -127,12 +129,13 @@ namespace MusicStore.Models
             // the current price for each of those albums in the cart
             // sum all album price totals to get the cart total
 
-            return _dbContext
-                .CartItems
-                .Include(c => c.Album)
-                .Where(c => c.CartId == _shoppingCartId)
-                .Select(c => c.Album.Price * c.Count)
-                .SumAsync();
+            // return _dbContext
+            //     .CartItems
+            //     .Where(c => c.CartId == _shoppingCartId)
+            //     .Select(c => c.Album.Price * c.Count)
+            //     .SumAsync();
+        
+            return Dal.GetShoppingCartTotal(_dbContext.Database.GetDbConnection(), _shoppingCartId);
         }
 
         public async Task<int> CreateOrder(Order order)

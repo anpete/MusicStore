@@ -9,6 +9,41 @@ namespace MusicStore.Models
 {
     public static class Dal
     {
+        public static async Task<decimal> GetShoppingCartTotal(DbConnection connection, string shoppingCartId)
+        {
+            var results = await Query(
+                connection,
+                @"SELECT SUM([c.Album].[Price] * [c].[Count])
+                  FROM [CartItems] AS [c]
+                  INNER JOIN [Albums] AS [c.Album] ON [c].[AlbumId] = [c.Album].[AlbumId]
+                  WHERE [c].[CartId] = @___shoppingCartId_0",
+                1,
+                values => ReferenceEquals(values[0], DBNull.Value) ? 0 : (decimal) values[0],
+                new Dictionary<string, object>
+                {
+                    {"___shoppingCartId_0", shoppingCartId}
+                });
+
+            return results[0];
+        }
+        
+        public static async Task<int> GetShoppingCartCount(DbConnection connection, string shoppingCartId)
+        {
+            var results = await Query(
+                connection,
+                @"SELECT SUM([c].[Count])
+                  FROM [CartItems] AS [c]
+                  WHERE ([c].[CartId] = @___shoppingCartId_0)",
+                1,
+                values => ReferenceEquals(values[0], DBNull.Value) ? 0 : (int) values[0],
+                new Dictionary<string, object>
+                {
+                    {"___shoppingCartId_0", shoppingCartId}
+                });
+
+            return results[0];
+        }
+        
         public static async Task<CartItem> GetCartItem(DbConnection connection, string shoppingCartId, int albumId)
         {
             var results = await Query(
