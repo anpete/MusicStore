@@ -9,6 +9,39 @@ namespace MusicStore.Models
 {
     public static class Dal
     {
+        public static async Task<CartItem> GetCartItem(DbConnection connection, string shoppingCartId, int albumId)
+        {
+            var results = await Query(
+                connection,
+                @"SELECT TOP(2) [c].[CartItemId], [c].[AlbumId], [c].[CartId], [c].[Count], [c].[DateCreated]
+                  FROM [CartItems] AS [c]
+                  WHERE ([c].[CartId] = @___shoppingCartId_0) AND ([c].[AlbumId] = @__albumId_1)",
+                5,
+                values => new CartItem
+                {
+                    CartItemId = (int) values[0],
+                    AlbumId = (int) values[1],
+                    CartId = (string) values[2],
+                    Count = (int) values[3],
+                    DateCreated = (DateTime) values[4]
+                },
+                new Dictionary<string, object>
+                {
+                    {"___shoppingCartId_0", shoppingCartId},
+                    {"__albumId_1", albumId}
+                });
+
+            switch (results.Count)
+            {
+                case 0:
+                    return null;
+                case 1:
+                    return results[0];
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
+        
         public static async Task<AlbumDetails> GetAlbumDetails(DbConnection connection, int albumId)
         {
             var results = await Query(

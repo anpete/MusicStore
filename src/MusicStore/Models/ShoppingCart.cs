@@ -27,9 +27,11 @@ namespace MusicStore.Models
         public async Task AddToCart(int albumId)
         {
             // Get the matching cart and album instances
-            var cartItem = await _dbContext.CartItems.SingleOrDefaultAsync(
-                c => c.CartId == _shoppingCartId
-                && c.AlbumId == albumId);
+            // var cartItem = await _dbContext.CartItems.SingleOrDefaultAsync(
+            //     c => c.CartId == _shoppingCartId
+            //     && c.AlbumId == albumId);
+
+            var cartItem = await Dal.GetCartItem(_dbContext.Database.GetDbConnection(), _shoppingCartId, albumId);
 
             if (cartItem == null)
             {
@@ -46,6 +48,8 @@ namespace MusicStore.Models
             }
             else
             {
+                _dbContext.CartItems.Attach(cartItem);
+                
                 // If the item does exist in the cart, then add one to the quantity
                 cartItem.Count++;
             }
