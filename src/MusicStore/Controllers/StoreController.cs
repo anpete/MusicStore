@@ -60,7 +60,9 @@ namespace MusicStore.Controllers
                                         AlbumId = a.AlbumId,
                                         Title = a.Title,
                                         AlbumArtUrl = a.AlbumArtUrl,
-                                        Price = a.Price
+                                        Price = a.Price,
+                                        GenreName = a.Genre.Name,
+                                        ArtistName = a.Artist.Name
                                     })
                                 .FirstOrDefaultAsync();
 
