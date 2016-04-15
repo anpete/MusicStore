@@ -55,22 +55,24 @@ namespace MusicStore.Models
             }
         }
 
-        public CartItem RemoveFromCart(int id)
+        public async Task<CartItem> RemoveFromCart(int id)
         {
-            var cartItem 
-                = _dbContext.CartItems
-                    .Where(ci => ci.CartId == _shoppingCartId
-                            && ci.CartItemId == id)
-                    .Select(ci => new CartItem 
-                        { 
-                            Count = ci.Count,
-                            Album = new Album 
-                                { 
-                                    AlbumId = ci.AlbumId, 
-                                    Title = ci.Album.Title 
-                                }
-                        })
-                    .FirstOrDefault();
+            // var cartItem 
+            //     = _dbContext.CartItems
+            //         .Where(ci => ci.CartId == _shoppingCartId
+            //                 && ci.CartItemId == id)
+            //         .Select(ci => new CartItem 
+            //             { 
+            //                 Count = ci.Count,
+            //                 Album = new Album 
+            //                     { 
+            //                         AlbumId = ci.AlbumId, 
+            //                         Title = ci.Album.Title 
+            //                     }
+            //             })
+            //         .FirstOrDefault();
+
+            var cartItem = await Dal.GetCartItemForRemove(_dbContext.Database.GetDbConnection(), _shoppingCartId, id);
 
             if (cartItem != null)
             {

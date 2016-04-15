@@ -9,6 +9,34 @@ namespace MusicStore.Models
 {
     public static class Dal
     {
+        public static async Task<CartItem> GetCartItemForRemove(
+            DbConnection connection, string shoppingCartId, int cartItemId)
+        {
+            var results = await Query(
+                connection,
+                @"SELECT TOP(1) [ci].[Count], [ci].[AlbumId], [ci.Album].[Title]
+                  FROM [CartItems] AS [ci]
+                  INNER JOIN [Albums] AS [ci.Album] ON [ci].[AlbumId] = [ci.Album].[AlbumId]
+                  WHERE ([ci].[CartId] = @___shoppingCartId_0) AND ([ci].[CartItemId] = @__id_1)",
+                3,
+                values => new CartItem
+                {
+                    Count = (int) values[0],
+                    Album = new Album
+                    {
+                        AlbumId = (int) values[1],
+                        Title = (string) values[2]
+                    }
+                },
+                new Dictionary<string, object>
+                {
+                    {"___shoppingCartId_0", shoppingCartId},
+                    {"__id_1", cartItemId}
+                });
+
+            return results[0];
+        }
+        
         public static Task<List<CartItem>> GetCartItems(DbConnection connection, string shoppingCartId)
         {
             return Query(

@@ -68,7 +68,7 @@ namespace MusicStore.Controllers
             var cart = ShoppingCart.GetCart(DbContext, HttpContext);
 
             // Remove from cart
-            var cartItem = cart.RemoveFromCart(id);
+            var cartItem = await cart.RemoveFromCart(id);
 
             await DbContext.SaveChangesAsync(requestAborted);
 
