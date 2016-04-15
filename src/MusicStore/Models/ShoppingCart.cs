@@ -24,19 +24,19 @@ namespace MusicStore.Models
         public static ShoppingCart GetCart(MusicStoreContext db, string cartId)
             => new ShoppingCart(db, cartId);
 
-        public async Task AddToCart(Album album)
+        public async Task AddToCart(int albumId)
         {
             // Get the matching cart and album instances
             var cartItem = await _dbContext.CartItems.SingleOrDefaultAsync(
                 c => c.CartId == _shoppingCartId
-                && c.AlbumId == album.AlbumId);
+                && c.AlbumId == albumId);
 
             if (cartItem == null)
             {
                 // Create a new cart item if no cart item exists
                 cartItem = new CartItem
                 {
-                    AlbumId = album.AlbumId,
+                    AlbumId = albumId,
                     CartId = _shoppingCartId,
                     Count = 1,
                     DateCreated = DateTime.Now
