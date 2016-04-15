@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using MusicStore.Models;
+using MusicStore.ViewModels;
 
 namespace MusicStore.Controllers
 {
@@ -49,13 +50,18 @@ namespace MusicStore.Controllers
             int id)
         {
             var cacheKey = string.Format("album_{0}", id);
-            Album album;
+            AlbumDetails album;
             if (!cache.TryGetValue(cacheKey, out album))
             {
                 album = await DbContext.Albums
                                 .Where(a => a.AlbumId == id)
-                                .Include(a => a.Artist)
-                                .Include(a => a.Genre)
+                                .Select(a => new AlbumDetails
+                                    {
+                                        AlbumId = a.AlbumId,
+                                        Title = a.Title,
+                                        AlbumArtUrl = a.AlbumArtUrl,
+                                        Price = a.Price
+                                    })
                                 .FirstOrDefaultAsync();
 
                 if (album != null)

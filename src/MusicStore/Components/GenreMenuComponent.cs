@@ -19,7 +19,7 @@ namespace MusicStore.Components
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var genres = await DbContext.Genres.Select(g => g.Name).Take(9).ToListAsync();
+            var genres = await Dal.GetGenreNames(DbContext.Database.GetDbConnection());
 
             return View(genres);
         }

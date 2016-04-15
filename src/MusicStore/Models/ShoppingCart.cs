@@ -97,12 +97,14 @@ namespace MusicStore.Models
         
         public Task<List<string>> GetCartAlbumTitles()
         {
-            return _dbContext
-                .CartItems
-                .Where(cart => cart.CartId == _shoppingCartId)
-                .Select(c => c.Album.Title)
-                .OrderBy(n => n)
-                .ToListAsync();
+            return Dal.GetCartAlbumTitles(_dbContext.Database.GetDbConnection(), _shoppingCartId);
+            
+            // return _dbContext
+            //     .CartItems
+            //     .Where(cart => cart.CartId == _shoppingCartId)
+            //     .Select(c => c.Album.Title)
+            //     .OrderBy(n => n)
+            //     .ToListAsync();
         }
 
         public Task<int> GetCount()
